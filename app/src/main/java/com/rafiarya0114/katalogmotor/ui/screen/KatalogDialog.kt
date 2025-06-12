@@ -147,8 +147,8 @@ fun KatalogDialog(
                     onValueChange = {
                         if (it.isEmpty() || it.matches(Regex("^\\d*\\.?\\d*\$"))) {
                             harga = it
-                            if (it.toDouble() <= 0) {
-                                harga = "0"
+                            if (it.toDoubleOrNull() != null && it.toDouble() <= 0.0) {
+                                harga = "1.0"
                             }
                         }
                     },
@@ -173,7 +173,7 @@ fun KatalogDialog(
                     }
                     OutlinedButton(
                         onClick = { onConfirmation(judul, manufacturer, harga.toDouble(), bitmap) },
-                        enabled = judul.isNotEmpty() && manufacturer.isNotEmpty() && harga.toDouble() > 0.0 && (katalog != null || bitmap != null),
+                        enabled = judul.isNotEmpty() && manufacturer.isNotEmpty() && (harga.toDoubleOrNull() != null && harga.toDouble()  >= 1.0) && (katalog != null || bitmap != null),
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(text = stringResource(R.string.simpan))
