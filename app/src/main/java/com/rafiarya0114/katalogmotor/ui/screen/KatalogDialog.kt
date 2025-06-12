@@ -118,7 +118,7 @@ fun KatalogDialog(
                     },
                     modifier = Modifier.padding(top = 8.dp).fillMaxWidth()
                 ) {
-
+                    Text(text = stringResource(R.string.pilih_gambar))
                 }
                 OutlinedTextField(
                     value = judul,
