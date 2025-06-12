@@ -123,7 +123,7 @@ fun KatalogDialog(
                 OutlinedTextField(
                     value = judul,
                     onValueChange = { judul = it },
-                    label = { Text(text = stringResource(id = R.string.nama)) },
+                    label = { Text(text = stringResource(id = R.string.judul)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Words,
@@ -134,7 +134,7 @@ fun KatalogDialog(
                 OutlinedTextField(
                     value = manufacturer,
                     onValueChange = { manufacturer = it },
-                    label = { Text(text = stringResource(id = R.string.nama_latin)) },
+                    label = { Text(text = stringResource(id = R.string.manufacturer)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences,
@@ -152,7 +152,7 @@ fun KatalogDialog(
                             }
                         }
                     },
-                    label = { Text(text = stringResource(id = R.string.nama_latin)) },
+                    label = { Text(text = stringResource(id = R.string.harga)) },
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,

@@ -6,15 +6,16 @@
     <string name="profil">Profil</string>
     <string name="tutup">Tutup</string>
     <string name="logout">Logout</string>
-    <string name="tambah_hewan">Tambah Hewan</string>
-    <string name="nama">Nama</string>
-    <string name="nama_latin">Nama latin</string>
+    <string name="tambah_katalog">Tambah Katalog</string>
+    <string name="judul">Nama</string>
+    <string name="manufacturer">Manufacturer</string>
+    <string name="harga">Harga</string>
     <string name="batal">Batal</string>
     <string name="simpan">Simpan</string>
     <string name="hapus">Hapus</string>
-    <string name="pesan_hapus">Hapus hewan ini?</string>
+    <string name="pesan_hapus">Hapus katalog ini?</string>
     <string name="tombol_hapus">Hapus</string>
     <string name="tombol_batal">Batal</string>
-    <string name="hapus_hewan_title">Hapus Hewan</string>
-    <string name="hapus_hewan_body">Apakah Anda yakin ingin menghapus %1$s?</string>
+    <string name="hapus_katalog_title">Hapus Katalog</string>
+    <string name="hapus_katalog_body">Apakah Anda yakin ingin menghapus %1$s?</string>
 </resources>

@@ -17,10 +17,10 @@ fun DisplayAlertDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = stringResource(R.string.hapus_hewan_title))
+            Text(text = stringResource(R.string.hapus_katalog_title))
         },
         text = {
-            Text(text = stringResource(R.string.hapus_hewan_body, katalog.judul))
+            Text(text = stringResource(R.string.hapus_katalog_body, katalog.judul))
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
