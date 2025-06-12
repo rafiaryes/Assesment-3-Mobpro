@@ -164,7 +164,7 @@ fun MainScreen() {
             KatalogDialog(
                 katalog = null,
                 onDismissRequest = { showKatalogDialog = false }) { judul, manufacturer, harga, bitmap ->
-                viewModel.saveData(user.token, judul, manufacturer, harga, bitmap)
+                viewModel.saveData(user.token, judul, manufacturer, harga, bitmap!!)
                 showKatalogDialog = false
             }
         }
