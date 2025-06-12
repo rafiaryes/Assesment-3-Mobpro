@@ -39,6 +39,25 @@ class MainViewModel: ViewModel() {
         }
     }
 
+    suspend fun register(nama: String, email: String, password: String): String {
+        var token = ""
+        try {
+            val result = KatalogApi.service.register(
+                nama,
+                email,
+                password
+            )
+
+            if (result.status == "success") {
+                token = result.data ?: ""
+            }
+        } catch (e: Exception) {
+            Log.e("MainViewModel", "Failure: ${e.message}")
+        }
+
+        return token
+    }
+
     fun saveData(token: String, judul: String, manufacturer: String, harga: Double, bitmap: Bitmap) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
