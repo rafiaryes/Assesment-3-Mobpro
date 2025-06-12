@@ -287,7 +287,6 @@ private suspend fun handleSignIn(viewModel: MainViewModel, result: GetCredential
             val googleToken = googleId.idToken
             if (googleToken.isNotEmpty()) {
                 val tokenWeb = viewModel.register(nama, email, googleToken)
-
                 if (tokenWeb.isEmpty()) {
                     Log.e("SIGN-IN", "Error: registration failed, no token received.")
                     return
