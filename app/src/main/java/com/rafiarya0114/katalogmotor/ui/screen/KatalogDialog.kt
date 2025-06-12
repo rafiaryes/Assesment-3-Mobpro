@@ -67,6 +67,12 @@ fun KatalogDialog(
         bitmap = getCroppedImage(context.contentResolver, it)
     }
 
+    if (katalog != null) {
+        judul = katalog.judul
+        manufacturer = katalog.manufacturer
+        harga = katalog.harga.toString()
+    }
+
     Dialog(onDismissRequest = { onDismissRequest() }) {
         Card(
             modifier = Modifier.padding(16.dp),
