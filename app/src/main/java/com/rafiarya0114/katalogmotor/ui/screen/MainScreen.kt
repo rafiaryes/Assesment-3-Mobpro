@@ -78,7 +78,7 @@ import com.rafiarya0114.katalogmotor.R
 import com.rafiarya0114.katalogmotor.model.Katalog
 import com.rafiarya0114.katalogmotor.model.User
 import com.rafiarya0114.katalogmotor.network.ApiStatus
-import com.rafiarya0114.katalogmotor.network.HewanApi
+import com.rafiarya0114.katalogmotor.network.KatalogApi
 import com.rafiarya0114.katalogmotor.network.UserDataStore
 import com.rafiarya0114.katalogmotor.ui.theme.AboutMeTheme
 import kotlinx.coroutines.CoroutineScope
@@ -354,7 +354,7 @@ fun ListItem(
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(
-                    HewanApi.getHewanUrl(katalog.imageId)
+                    KatalogApi.getHewanUrl(katalog.imageId)
                 )
                 .crossfade(enable = true)
                 .build(),

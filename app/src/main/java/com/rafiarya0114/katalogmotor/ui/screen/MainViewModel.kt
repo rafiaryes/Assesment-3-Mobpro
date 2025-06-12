@@ -61,14 +61,14 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun saveData(token: String, id_katalog: Long, judul: String, manufacturer: String, harga: Double, bitmap: Bitmap?) {
+    fun saveData(token: String, idKatalog: Long, judul: String, manufacturer: String, harga: Double, bitmap: Bitmap?) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val imagePart = bitmap?.toMultipartBody()
                 val result = KatalogApi.service.updateKatalog(
                     token,
                     "PUT".toRequestBody("text/plain".toMediaTypeOrNull()),
-                    id_katalog,
+                    idKatalog,
                     judul.toRequestBody("text/plain".toMediaTypeOrNull()),
                     manufacturer.toRequestBody("text/plain".toMediaTypeOrNull()),
                     harga,
