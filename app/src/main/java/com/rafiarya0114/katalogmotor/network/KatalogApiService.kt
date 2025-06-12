@@ -18,7 +18,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 
-private const val BASE_URL = "https://ec2c-35-234-39-3.ngrok-free.app/"
+private const val BASE_URL = "https://ec2c-35-234-39-3.ngrok-free.app/api/"
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
