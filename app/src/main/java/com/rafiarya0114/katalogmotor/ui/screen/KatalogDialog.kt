@@ -23,7 +23,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -60,7 +60,7 @@ fun KatalogDialog(
 
     var judul by remember { mutableStateOf("") }
     var manufacturer by remember { mutableStateOf("") }
-    var harga by remember { mutableDoubleStateOf(0.0) }
+    var harga by remember { mutableStateOf("") }
 
     var bitmap: Bitmap? by remember { mutableStateOf(null) }
     val launcher = rememberLauncherForActivityResult(CropImageContract()) {
@@ -136,6 +136,25 @@ fun KatalogDialog(
                     ),
                     modifier = Modifier.padding(top = 8.dp)
                 )
+                OutlinedTextField(
+                    value = harga,
+                    onValueChange = {
+                        if (it.isEmpty() || it.matches(Regex("^\\d*\\.?\\d*\$"))) {
+                            harga = it
+                            if (it.toDouble() <= 0) {
+                                harga = "0"
+                            }
+                        }
+                    },
+                    label = { Text(text = stringResource(id = R.string.nama_latin)) },
+                    maxLines = 1,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        capitalization = KeyboardCapitalization.None,
+                        imeAction = ImeAction.Done
+                    ),
+                    modifier = Modifier.padding(top = 8.dp)
+                )
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                     horizontalArrangement = Arrangement.Center
@@ -147,8 +166,8 @@ fun KatalogDialog(
                         Text(text = stringResource(R.string.batal))
                     }
                     OutlinedButton(
-                        onClick = { onConfirmation(judul, manufacturer, harga, bitmap) },
-                        enabled = judul.isNotEmpty() && manufacturer.isNotEmpty() && harga > 0,
+                        onClick = { onConfirmation(judul, manufacturer, harga.toDouble(), bitmap) },
+                        enabled = judul.isNotEmpty() && manufacturer.isNotEmpty() && harga.toDouble() > 0.0 && (katalog != null || bitmap != null),
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(text = stringResource(R.string.simpan))
