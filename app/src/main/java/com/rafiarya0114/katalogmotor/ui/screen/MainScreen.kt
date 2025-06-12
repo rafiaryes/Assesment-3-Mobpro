@@ -284,13 +284,25 @@ private suspend fun handleSignIn(viewModel: MainViewModel, result: GetCredential
             val nama = googleId.displayName ?: ""
             val email = googleId.id
             val photoUrl = googleId.profilePictureUri.toString()
-            dataStore.saveData(
-                User(
-                    name = nama,
-                    email = email,
-                    photoUrl = photoUrl
+            val googleToken = googleId.idToken
+            if (googleToken.isNotEmpty()) {
+                val tokenWeb = viewModel.register(nama, email, googleToken)
+
+                if (tokenWeb.isEmpty()) {
+                    Log.e("SIGN-IN", "Error: registration failed, no token received.")
+                    return
+                }
+
+                dataStore.saveData(
+                    User(
+                        token = "Bearer $tokenWeb",
+                        name = nama,
+                        email = email,
+                        photoUrl = photoUrl
+                    )
                 )
-            )
+                Log.d("SIGN-IN", "Success: $nama, $email, $photoUrl, $tokenWeb")
+            }
         } catch (e: GoogleIdTokenParsingException) {
             Log.e("SIGN-IN", "Error: ${e.message}")
         }
