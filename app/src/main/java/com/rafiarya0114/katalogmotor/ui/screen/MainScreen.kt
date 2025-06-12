@@ -1,17 +1,12 @@
 package com.rafiarya0114.katalogmotor.ui.screen
 
-import android.content.ContentResolver
 import android.content.Context
 import android.content.res.Configuration
-import android.graphics.Bitmap
-import android.graphics.ImageDecoder
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,10 +61,6 @@ import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.canhub.cropper.CropImageContract
-import com.canhub.cropper.CropImageContractOptions
-import com.canhub.cropper.CropImageOptions
-import com.canhub.cropper.CropImageView
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
@@ -95,7 +86,7 @@ fun MainScreen() {
     val errorMessage by viewModel.errorMessage
 
     var showDialog by remember { mutableStateOf(false) }
-    var showHewanDialog by remember { mutableStateOf(false) }
+    var showKatalogDialog by remember { mutableStateOf(false) }
 
     val deleteStatus by viewModel.deleteStatus
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -121,7 +112,7 @@ fun MainScreen() {
                     IconButton(onClick = {
                         if (user.token.isEmpty()) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                signIn(context, dataStore)
+                                signIn(viewModel, context, dataStore)
                             }
                         } else {
 //                            Log.d("SIGN-IN", "User: $user")
@@ -140,16 +131,7 @@ fun MainScreen() {
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                val options = CropImageContractOptions(
-                    null,
-                    CropImageOptions(
-                        imageSourceIncludeGallery = false,
-                        imageSourceIncludeCamera = true,
-                        fixAspectRatio = true
-                    )
-                )
-
-                launcher.launch(options)
+                showKatalogDialog = true
             }) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -157,14 +139,13 @@ fun MainScreen() {
                 )
             }
         }
-    ){
-            innerPadding ->
+    ){ innerPadding ->
         ScreenContent(
             viewModel,
-            userId = user.token,
+            token = user.token,
             modifier = Modifier.padding(innerPadding),
-            onDeleteClick = { hewan ->
-                selectedKatalog = hewan
+            onDeleteClick = { katalog ->
+                selectedKatalog = katalog
                 showDeleteDialog = true
             }
         )
@@ -179,12 +160,12 @@ fun MainScreen() {
                 showDialog = false
             }
         }
-        if (showHewanDialog) {
+        if (showKatalogDialog) {
             KatalogDialog(
                 katalog = null,
-                onDismissRequest = { showHewanDialog = false }) { judul, manufacturer, harga, bitmap ->
-                viewModel.saveData(user.token, judul, manufacturer, harga, bitmap!!)
-                showHewanDialog = false
+                onDismissRequest = { showKatalogDialog = false }) { judul, manufacturer, harga, bitmap ->
+                viewModel.saveData(user.token, judul, manufacturer, harga, bitmap)
+                showKatalogDialog = false
             }
         }
         if (showDeleteDialog && selectedKatalog != null) {
@@ -209,12 +190,24 @@ fun MainScreen() {
 }
 
 @Composable
-fun ScreenContent(viewModel: MainViewModel, userId: String, onDeleteClick: (Katalog) -> Unit, modifier: Modifier = Modifier) {
+fun ScreenContent(viewModel: MainViewModel, token: String, onDeleteClick: (Katalog) -> Unit, modifier: Modifier = Modifier) {
     val data by viewModel.data
     val status by viewModel.status.collectAsState()
+    var showDetailDialog by remember { mutableStateOf<Katalog?>(null) }
 
-    LaunchedEffect(userId) {
-        viewModel.retrieveData(userId)
+    LaunchedEffect(token) {
+        viewModel.retrieveData(token)
+    }
+
+    if (showDetailDialog != null) {
+        KatalogDialog(
+            katalog = showDetailDialog!!,
+            onDismissRequest = { showDetailDialog = null },
+            onConfirmation = { judul, manufacturer, harga, bitmap ->
+                viewModel.updateData(token, showDetailDialog!!.id_katalog, judul, manufacturer, harga, bitmap)
+                showDetailDialog = null
+            }
+        )
     }
 
     when(status){
@@ -238,7 +231,9 @@ fun ScreenContent(viewModel: MainViewModel, userId: String, onDeleteClick: (Kata
                         onDeleteClick = if (it.mine == 1) { // Hanya untuk hewan milik user
                             { onDeleteClick(it) }
                         } else null
-                    )
+                    ) {
+                        showDetailDialog = it
+                    }
                 }
             }
         }
@@ -250,7 +245,7 @@ fun ScreenContent(viewModel: MainViewModel, userId: String, onDeleteClick: (Kata
             ) {
                 Text(text = stringResource(id = R.string.error))
                 Button(
-                    onClick = {viewModel.retrieveData(userId)},
+                    onClick = {viewModel.retrieveData(token)},
                     modifier = Modifier.padding(top = 16.dp),
                     contentPadding = PaddingValues(horizontal = 32.dp, vertical = 16.dp)
                 ) {
@@ -262,7 +257,7 @@ fun ScreenContent(viewModel: MainViewModel, userId: String, onDeleteClick: (Kata
     }
 }
 
-private suspend fun signIn(context: Context, dataStore: UserDataStore) {
+private suspend fun signIn(viewModel: MainViewModel, context: Context, dataStore: UserDataStore) {
     val googleIdOption: GetGoogleIdOption = GetGoogleIdOption.Builder()
         .setFilterByAuthorizedAccounts(false)
         .setServerClientId(BuildConfig.API_KEY)
@@ -274,13 +269,13 @@ private suspend fun signIn(context: Context, dataStore: UserDataStore) {
     try {
         val credentialManager = CredentialManager.create(context)
         val result = credentialManager.getCredential(context, request)
-        handleSignIn(result, dataStore)
+        handleSignIn(viewModel, result, dataStore)
     } catch (e: GetCredentialException) {
         Log.e("SIGN-IN", "Error: ${e.errorMessage}")
     }
 }
 
-private suspend fun handleSignIn(result: GetCredentialResponse, dataStore: UserDataStore) {
+private suspend fun handleSignIn(viewModel: MainViewModel, result: GetCredentialResponse, dataStore: UserDataStore) {
     val credential = result.credential
     if (credential is CustomCredential &&
         credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
@@ -319,10 +314,16 @@ private suspend fun signOut(context: Context, dataStore: UserDataStore) {
 @Composable
 fun ListItem(
     katalog: Katalog,
-    onDeleteClick: (() -> Unit)? = null
+    onDeleteClick: (() -> Unit)? = null,
+    onUpdateClick: (() -> Unit)? = null,
 ) {
     Box(
         modifier = Modifier
+            .clickable {
+                if (onUpdateClick != null) {
+                    onUpdateClick()
+                }
+            }
             .padding(4.dp)
             .border(1.dp, Color.Gray),
         contentAlignment = Alignment.BottomCenter
@@ -330,11 +331,11 @@ fun ListItem(
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(
-                    KatalogApi.getHewanUrl(katalog.imageId)
+                    KatalogApi.getImageUrl(katalog.id_katalog)
                 )
                 .crossfade(enable = true)
                 .build(),
-            contentDescription = stringResource(R.string.gambar, katalog.nama),
+            contentDescription = stringResource(R.string.gambar, katalog.judul),
             contentScale = ContentScale.Crop,
             placeholder = painterResource(id = R.drawable.loading_img),
             error = painterResource(id = R.drawable.baseline_broken_image_24),
@@ -353,12 +354,12 @@ fun ListItem(
                 modifier = Modifier.align(Alignment.CenterStart)
             ) {
                 Text(
-                    text = katalog.nama,
+                    text = katalog.judul,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
                 Text(
-                    text = katalog.namaLatin,
+                    text = katalog.manufacturer,
                     fontStyle = FontStyle.Italic,
                     fontSize = 14.sp,
                     color = Color.White

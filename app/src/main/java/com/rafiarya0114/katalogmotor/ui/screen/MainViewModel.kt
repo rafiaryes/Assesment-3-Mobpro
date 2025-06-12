@@ -61,7 +61,7 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun saveData(token: String, idKatalog: Long, judul: String, manufacturer: String, harga: Double, bitmap: Bitmap?) {
+    fun updateData(token: String, idKatalog: Long, judul: String, manufacturer: String, harga: Double, bitmap: Bitmap?) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val imagePart = bitmap?.toMultipartBody()
