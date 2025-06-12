@@ -17,7 +17,6 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 private const val BASE_URL = "https://gh.d3ifcool.org/"
 
@@ -49,14 +48,14 @@ interface KatalogApiService {
     @DELETE("katalog/{id_katalog}")
     suspend fun deleteKatalog(
         @Header("Authorization") token: String,
-        @Query("id") id: String
+        @Path("id_katalog") idKatalog: Long
     ): OpStatus
 
     @Multipart
     @POST("katalog/{id_katalog}")
     suspend fun updateKatalog(
         @Header("Authorization") token: String,
-        @Part("_method") method: String,
+        @Part("_method") method: RequestBody,
         @Path("id_katalog") idKatalog: Long,
         @Part("judul") nama: RequestBody,
         @Part("manufacturer") namaLatin: RequestBody,
@@ -73,7 +72,7 @@ interface KatalogApiService {
     ): OpStatus
 }
 
-object HewanApi {
+object KatalogApi {
     val service: KatalogApiService by lazy {
         retrofit.create(KatalogApiService::class.java)
     }

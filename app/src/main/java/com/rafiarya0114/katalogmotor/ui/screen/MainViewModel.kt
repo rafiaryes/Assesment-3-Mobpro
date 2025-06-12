@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rafiarya0114.katalogmotor.model.Katalog
 import com.rafiarya0114.katalogmotor.network.ApiStatus
-import com.rafiarya0114.katalogmotor.network.HewanApi
+import com.rafiarya0114.katalogmotor.network.KatalogApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -26,11 +26,11 @@ class MainViewModel: ViewModel() {
     var deleteStatus = mutableStateOf<String?>(null)
         private set
 
-    fun retrieveData(userId: String) {
+    fun retrieveData(token: String) {
         viewModelScope.launch(Dispatchers.IO) {
             status.value = ApiStatus.LOADING
             try {
-                data.value = HewanApi.service.getHewan(userId)
+                data.value = KatalogApi.service.getHewan(token)
                 status.value = ApiStatus.SUCCESS
             } catch (e: Exception) {
                 Log.d("MainViewModel", "Failure: ${e.message}")
@@ -42,7 +42,7 @@ class MainViewModel: ViewModel() {
     fun saveData(token: String, judul: String, manufacturer: String, harga: Double, bitmap: Bitmap) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = HewanApi.service.postKatalog(
+                val result = KatalogApi.service.postKatalog(
                     token,
                     judul.toRequestBody("text/plain".toMediaTypeOrNull()),
                     manufacturer.toRequestBody("text/plain".toMediaTypeOrNull()),
@@ -61,12 +61,37 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun deleteData(userId: String, katalogId: Long) {
+    fun saveData(token: String, id_katalog: Long, judul: String, manufacturer: String, harga: Double, bitmap: Bitmap?) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = HewanApi.service.deleteKatalog(userId, katalogId)
+                val imagePart = bitmap?.toMultipartBody()
+                val result = KatalogApi.service.updateKatalog(
+                    token,
+                    "PUT".toRequestBody("text/plain".toMediaTypeOrNull()),
+                    id_katalog,
+                    judul.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    manufacturer.toRequestBody("text/plain".toMediaTypeOrNull()),
+                    harga,
+                    imagePart
+                )
+
+                if (result.status == "success")
+                    retrieveData(token)
+                else
+                    throw Exception(result.message)
+            } catch (e: Exception) {
+                Log.d("MainViewModel", "Failure: ${e.message}")
+                errorMessage.value = "Error: ${e.message}"
+            }
+        }
+    }
+
+    fun deleteData(token: String, katalogId: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val result = KatalogApi.service.deleteKatalog(token, katalogId)
                 if (result.status == "success") {
-                    retrieveData(userId)
+                    retrieveData(token)
                 } else {
                     deleteStatus.value = result.message ?: "Gagal menghapus data"
                 }
