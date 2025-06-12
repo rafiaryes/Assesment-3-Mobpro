@@ -54,7 +54,7 @@ import com.rafiarya0114.katalogmotor.ui.theme.AboutMeTheme
 fun KatalogDialog(
     katalog: Katalog? = null,
     onDismissRequest: () -> Unit,
-    onConfirmation: (String, String, Double, Bitmap) -> Unit
+    onConfirmation: (String, String, Double, Bitmap?) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -147,7 +147,7 @@ fun KatalogDialog(
                         Text(text = stringResource(R.string.batal))
                     }
                     OutlinedButton(
-                        onClick = { onConfirmation(judul, manufacturer) },
+                        onClick = { onConfirmation(judul, manufacturer, harga, bitmap) },
                         enabled = judul.isNotEmpty() && manufacturer.isNotEmpty() && harga > 0,
                         modifier = Modifier.padding(8.dp)
                     ) {
