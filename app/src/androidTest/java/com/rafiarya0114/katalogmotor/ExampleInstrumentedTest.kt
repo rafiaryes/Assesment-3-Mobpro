@@ -1,4 +1,4 @@
-package com.rafiarya0114.aboutme
+package com.rafiarya0114.katalogmotor
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

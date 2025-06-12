@@ -1,6 +1,5 @@
-package com.rafiarya0114.aboutme.ui.theme
+package com.rafiarya0114.katalogmotor.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

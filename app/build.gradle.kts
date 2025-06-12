@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.rafiarya0114.aboutme"
+    namespace = "com.rafiarya0114.katalogmotor"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.rafiarya0114.aboutme"
+        applicationId = "com.rafiarya0114.katalogmotor"
         minSdk = 23
         targetSdk = 35
         versionCode = 1

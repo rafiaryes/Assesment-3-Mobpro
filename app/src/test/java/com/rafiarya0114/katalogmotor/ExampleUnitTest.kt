@@ -1,4 +1,4 @@
-package com.rafiarya0114.aboutme
+package com.rafiarya0114.katalogmotor
 
 import org.junit.Test
 
