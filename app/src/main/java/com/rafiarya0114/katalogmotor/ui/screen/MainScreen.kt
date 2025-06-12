@@ -97,11 +97,6 @@ fun MainScreen() {
     var showDialog by remember { mutableStateOf(false) }
     var showHewanDialog by remember { mutableStateOf(false) }
 
-    var bitmap: Bitmap? by remember { mutableStateOf(null) }
-    val launcher = rememberLauncherForActivityResult(CropImageContract()) {
-        bitmap = getCroppedImage(context.contentResolver, it)
-        if (bitmap != null) showHewanDialog = true
-    }
     val deleteStatus by viewModel.deleteStatus
     var showDeleteDialog by remember { mutableStateOf(false) }
     var selectedKatalog by remember { mutableStateOf<Katalog?>(null) }
@@ -185,10 +180,10 @@ fun MainScreen() {
             }
         }
         if (showHewanDialog) {
-            HewanDialog(
-                bitmap = bitmap,
-                onDismissRequest = { showHewanDialog = false }) { nama, namaLatin ->
-                viewModel.saveData(user.token, nama, namaLatin, bitmap!!)
+            KatalogDialog(
+                katalog = null,
+                onDismissRequest = { showHewanDialog = false }) { judul, manufacturer, harga, bitmap ->
+                viewModel.saveData(user.token, judul, manufacturer, harga, bitmap!!)
                 showHewanDialog = false
             }
         }
@@ -318,25 +313,6 @@ private suspend fun signOut(context: Context, dataStore: UserDataStore) {
         dataStore.saveData(User("", "", ""))
     } catch (e: ClearCredentialException) {
         Log.e("SIGN-IN", "Error: ${e.errorMessage}")
-    }
-}
-
-private fun getCroppedImage(
-    resolver: ContentResolver,
-    result: CropImageView.CropResult
-): Bitmap? {
-    if (!result.isSuccessful) {
-        Log.e("IMAGE", "Error: ${result.error}")
-        return null
-    }
-
-    val uri = result.uriContent ?: return null
-
-    return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-        MediaStore.Images.Media.getBitmap(resolver, uri)
-    } else {
-        val source = ImageDecoder.createSource(resolver, uri)
-        ImageDecoder.decodeBitmap(source)
     }
 }
 
