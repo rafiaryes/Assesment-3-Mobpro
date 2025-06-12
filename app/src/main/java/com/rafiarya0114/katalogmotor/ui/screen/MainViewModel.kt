@@ -86,10 +86,10 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    fun deleteData(token: String, katalogId: Long) {
+    fun deleteData(token: String, idKatalog: Long) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val result = KatalogApi.service.deleteKatalog(token, katalogId)
+                val result = KatalogApi.service.deleteKatalog(token, idKatalog)
                 if (result.status == "success") {
                     retrieveData(token)
                 } else {
