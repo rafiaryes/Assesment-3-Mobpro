@@ -78,7 +78,7 @@ object KatalogApi {
     }
 
     fun getImageUrl(id: Long): String {
-        return "${BASE_URL}katalog/image/$id"
+        return "${BASE_URL}katalog/image/$id?timestamp=${System.currentTimeMillis()}"
     }
 }
 
