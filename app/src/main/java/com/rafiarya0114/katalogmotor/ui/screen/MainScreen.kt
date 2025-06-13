@@ -131,13 +131,17 @@ fun MainScreen() {
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                showKatalogDialog = true
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.tambah_katalog)
-                )
+            if (user.token.isNotEmpty()) {
+                FloatingActionButton(
+                    onClick = {
+                        showKatalogDialog = true
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(id = R.string.tambah_katalog)
+                    )
+                }
             }
         }
     ){ innerPadding ->
