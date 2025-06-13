@@ -382,7 +382,7 @@ fun ListItem(
                     color = Color.White
                 )
                 Text(
-                    text = katalog.harga,
+                    text = katalog.harga.toString(),
                     fontStyle = FontStyle.Italic,
                     fontSize = 14.sp,
                     color = Color.White
